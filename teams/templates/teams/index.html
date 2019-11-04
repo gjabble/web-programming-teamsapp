@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Teams</title>
+  </head>
+
+  <body>
+    <h1>TEAMS APP</h1>
+    <h2>List of Teams</h2>
+    <ul id="teams-list"></ul>
+    <h2>List of Players</h2>
+    <ul id="players-list"></ul>
+    <h2>Add a Team</h2>
+    <form>
+      <label for="team-name">Name</label>
+      <br />
+      <input type="text" name="name" id="team-name" />
+      <br />
+
+      <label for="team-points">Points</label>
+      <br />
+      <input type="number" name="points" id="team-points" />
+      <br />
+
+      <label for="team-position">Position</label>
+      <br />
+      <input type="number" name="points" id="team-position" />
+      <br />
+
+      <label for="team-wins">Wins</label>
+      <br />
+      <input type="number" name="wins" id="team-wins" />
+      <br />
+
+      <label for="team-losses">Losses</label>
+      <br />
+      <input type="number" name="losses" id="team-losses" />
+      <br />
+
+      <label for="team-description">Description</label>
+      <br />
+      <input type="text" name="description" id="team-description" />
+      <br />
+
+      <br />
+    </form>
+    <button onclick="submitTeam()">Add Team</button>
+    <h2>Add a Player</h2>
+    <form>
+      <label for="player-name">Name</label>
+      <br />
+      <input type="text" name="name" id="player-name" />
+      <br />
+
+      <label for="player-position">Position</label>
+      <br />
+      <input type="text" name="position" id="player-position" />
+      <br />
+
+      <label for="player-team">Team ID</label>
+      <br />
+      <input type="number" name="team" id="player-team-id" />
+      <br />
+
+      <br />
+    </form>
+    <button onclick="submitPlayer()">Add Player</button>
+
+    <h2>Remove a Team</h2>
+    <label for="remove-team-id">Team ID</label>
+    <input type="number" id="remove-team-id" />
+    <button onclick="removeTeam()">Remove Team</button>
+    <h2>Remove a Player</h2>
+    <label for="remove-player-id">Player ID</label>
+    <input type="number" id="remove-player-id" />
+    <button onclick="removePlayer()">Remove Player</button>
+
+    <h2>Update a Team</h2>
+    <form>
+      <label for="update-team-id">Team ID</label>
+      <br />
+      <input type="number" name="teamid" id="update-team-id" />
+      <br />
+      <label for="update-team-name">Name</label>
+      <br />
+      <input type="text" name="name" id="update-team-name" />
+      <br />
+      <label for="update-team-points">Points</label>
+      <br />
+      <input type="number" name="points" id="update-team-points" />
+      <br />
+      <label for="update-team-wins">Wins</label>
+      <br />
+      <input type="number" name="wins" id="update-team-wins" />
+      <br />
+      <label for="update-team-losses">Losses</label>
+      <br />
+      <input type="number" name="losses" id="update-team-losses" />
+      <br />
+      <label for="update-team-description">Description</label>
+      <br />
+      <input type="text" name="description" id="update-team-description" />
+      <br />
+      <br />
+    </form>
+    <button onclick="updateTeam()">Update Team</button>
+
+    <h2>Update a Player</h2>
+    <form>
+      <label for="update-player-id">Player ID</label>
+      <br />
+      <input type="number" name="playerid" id="update-player-id" />
+      <br />
+      <label for="update-player-name">Name</label>
+      <br />
+      <input type="text" name="name" id="update-player-name" />
+      <br />
+      <label for="update-player-position">Position</label>
+      <br />
+      <input type="text" name="position" id="update-player-position" />
+      <br />
+      <label for="update-player-team">Team ID</label>
+      <br />
+      <input type="number" name="teamid" id="update-player-team" />
+      <br />
+    </form>
+    <br />
+    <button onclick="updatePlayer()">Update Player</button>
+  </body>
+
+  <script>
+    const root = "http://127.0.0.1:8000/teamsapp";
+
+    function getUpdatedPlayerData() {
+      return {
+        name: document.querySelector("#update-player-name").value,
+        position: document.querySelector("#update-player-position").value,
+        teamId: document.querySelector("#update-player-team").value
+      };
+    }
+
+    function updatePlayer() {
+      const playerId = document.querySelector("#update-player-id").value;
+      $.ajax({
+        url: `${root}/api/players/${playerId}`,
+        method: "PUT",
+        success: startApp,
+        data: getUpdatedPlayerData(),
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        error: () => {
+          console.log("error");
+        }
+      });
+    }
+
+    function getUpdatedTeamData() {
+      return {
+        name: document.querySelector("#update-team-name").value,
+        points: document.querySelector("#update-team-points").value,
+        wins: document.querySelector("#update-team-wins").value,
+        losses: document.querySelector("#update-team-losses").value,
+        description: document.querySelector("#update-team-description").value
+      };
+    }
+
+    function updateTeam() {
+      const teamId = document.querySelector("#update-team-id").value;
+      $.ajax({
+        url: `${root}/api/teams/${teamId}`,
+        method: "PUT",
+        success: startApp,
+        data: getUpdatedTeamData(),
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        error: () => {
+          console.log("error");
+        }
+      });
+    }
+
+    function removeTeam() {
+      const teamId = document.querySelector("#remove-team-id").value;
+      $.ajax({
+        url: `${root}/api/teams/${teamId}`,
+        method: "DELETE",
+        success: startApp,
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        error: () => {
+          console.log("error");
+        }
+      });
+    }
+
+    function removePlayer() {
+      const playerId = document.querySelector("#remove-player-id").value;
+      $.ajax({
+        url: `${root}/api/players/${playerId}`,
+        method: "DELETE",
+        success: startApp,
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        error: () => {
+          console.log("error");
+        }
+      });
+    }
+
+    function refreshApp() {
+      const teamsList = document.querySelector("#teams-list");
+      while (teamsList.firstChild) {
+        teamsList.removeChild(teamsList.firstChild);
+      }
+      const playersList = document.querySelector("#players-list");
+      while (playersList.firstChild) {
+        playersList.removeChild(playersList.firstChild);
+      }
+    }
+
+    function startApp() {
+      refreshApp();
+
+      $.ajax({
+        url: `${root}/api/teams`,
+        method: "GET",
+        success: handleTeamsSuccess,
+        contentType: "json",
+        error: () => {
+          console.log("error");
+        }
+      });
+
+      $.ajax({
+        url: `${root}/api/players`,
+        method: "GET",
+        success: handlePlayersSuccess,
+        contentType: "json",
+        error: () => {
+          console.log("error");
+        }
+      });
+    }
+
+    startApp();
+
+    function submitPlayer() {
+      $.ajax({
+        url: `${root}/api/players`,
+        method: "POST",
+        success: addPlayerSuccess,
+        dataType: "json",
+        data: getPlayerFormData(),
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        error: () => {
+          console.log("error");
+        }
+      });
+    }
+
+    function getPlayerFormData() {
+      return {
+        name: document.querySelector("#player-name").value,
+        position: document.querySelector("#player-position").value,
+        teamId: document.querySelector("#player-team-id").value
+      };
+    }
+
+    function addTeamSuccess(response) {
+      startApp();
+    }
+
+    function addPlayerSuccess(response) {
+      startApp();
+    }
+
+    function submitTeam() {
+      $.ajax({
+        url: `${root}/api/teams`,
+        method: "POST",
+        success: addTeamSuccess,
+        dataType: "json",
+        data: getTeamFormData(),
+        headers: {
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        error: () => {
+          console.log("error");
+        }
+      });
+    }
+
+    function getTeamFormData() {
+      return {
+        name: document.querySelector("#team-name").value,
+        wins: document.querySelector("#team-wins").value,
+        losses: document.querySelector("#team-losses").value,
+        position: document.querySelector("#team-position").value,
+        points: document.querySelector("#team-points").value,
+        description: document.querySelector("#team-description").value
+      };
+    }
+
+    function handleTeamsSuccess(response) {
+      const teams = JSON.parse(response);
+      const teamList = document.querySelector("#teams-list");
+      teams.forEach(team => {
+        const teamElement = document.createElement("li");
+        teamElement.teamId = team.pk;
+        teamElement.innerText = `${team.fields.name}  | Wins: ${team.fields.wins} | Losses: ${team.fields.losses} | Team ID: ${team.pk}`;
+        teamElement.addEventListener("click", () => {
+          if (teamElement.children.length == 1) {
+            teamElement.removeChild(teamElement.children[0]);
+            return;
+          }
+          let p = document.createElement("p");
+          p.innerText = team.fields.description;
+          teamElement.appendChild(p);
+        });
+        teamList.appendChild(teamElement);
+      });
+    }
+
+    function handlePlayersSuccess(response) {
+      const players = JSON.parse(response);
+      const playersList = document.querySelector("#players-list");
+
+      players.forEach(player => {
+        const playerElement = document.createElement("li");
+
+        playerElement.playerId = player.pk;
+        playerElement.teamId = player.fields.team;
+
+        $.ajax({
+          url: `${root}/api/teams/${player.fields.team}`,
+          method: "GET",
+          success: resp => {
+            const teamName = JSON.parse(resp).fields.name;
+            playerElement.innerText = `${player.fields.name} | Position: ${player.fields.position} | Team: ${teamName} | Player ID: ${player.pk}`;
+            playersList.appendChild(playerElement);
+          },
+          contentType: "json",
+          error: () => {
+            console.log("error");
+          }
+        });
+      });
+    }
+
+    function getCookie(name) {
+      var cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        var cookies = document.cookie.split(";");
+        for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  </script>
+</html>
