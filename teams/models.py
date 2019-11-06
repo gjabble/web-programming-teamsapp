@@ -9,7 +9,7 @@ class Team(models.Model):
   position = models.IntegerField()
   wins = models.IntegerField()
   losses = models.IntegerField()
-  description = models.CharField(max_length=200)
+  description = models.TextField()
 
   def __str__(self):
     return self.name
